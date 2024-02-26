@@ -209,7 +209,7 @@ pipeline {
     SONAR_CREDENTIAL_ID = "${env.SONAR_CREDENTIAL_ID}"
     STAGE_FLAG = "${STAGE_FLAG}"
     JENKINS_METADATA = "${JENKINS_METADATA}"
-    JAVA_MVN_IMAGE_VERSION = "maven:3.8.1-openjdk-17-slim" //https://hub.docker.com/_/maven/tags 
+    JAVA_MVN_IMAGE_VERSION = "maven:3.9.6-amazoncorretto-21-debian-bookworm" //https://hub.docker.com/_/maven/tags 
     KUBECTL_IMAGE_VERSION = "bitnami/kubectl:1.24.9" //https://hub.docker.com/r/bitnami/kubectl/tags
     HELM_IMAGE_VERSION = "alpine/helm:3.8.1" //https://hub.docker.com/r/alpine/helm/tags   
     OC_IMAGE_VERSION = "quay.io/openshift/origin-cli:4.9.0" //https://quay.io/repository/openshift/origin-cli?tab=tags
