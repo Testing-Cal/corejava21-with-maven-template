@@ -28,6 +28,7 @@ public class DemoAppCoreJava {
 
         String port = System.getenv("port") == null ? rb.getString("port") : System.getenv("port");
         final String greetingMessage = rb.getString("server.greetingMessage");
+        final String title = rb.getString("server.title");
         String servletName = rb.getString("server.servletName");
         String servletContext =  System.getenv("context");
         
@@ -42,6 +43,11 @@ public class DemoAppCoreJava {
             protected void service(HttpServletRequest req, HttpServletResponse resp)
                     throws ServletException, IOException {
                 Writer w = resp.getWriter();
+                w.write("<html>");
+                w.write("<head>");
+                w.write("<title>"+ title +"</title>");
+                w.write("</head>");
+                w.write("</html>");
                 w.write(greetingMessage);
                 w.flush();
             }
