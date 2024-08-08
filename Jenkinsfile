@@ -210,8 +210,8 @@ pipeline {
         STAGE_FLAG = "${STAGE_FLAG}"
         JENKINS_METADATA = "${JENKINS_METADATA}"
 
-        JAVA_MVN_IMAGE_VERSION = "maven:3.9.6-amazoncorretto-21-debian-bookworm" //https://hub.docker.com/_/maven/tags
-        KUBECTL_IMAGE_VERSION = "bitnami/kubectl:1.24.9" //https://hub.docker.com/r/bitnami/kubectl/tags
+        JAVA_MVN_IMAGE_VERSION = "amazoncorretto:21-alpine" //https://hub.docker.com/_/maven/tags
+        KUBECTL_IMAGE_VERSION = "bitnami/kubectl:1.28" //https://hub.docker.com/r/bitnami/kubectl/tags
         HELM_IMAGE_VERSION = "alpine/helm:3.8.1" //https://hub.docker.com/r/alpine/helm/tags   
         OC_IMAGE_VERSION = "quay.io/openshift/origin-cli:4.9.0" //https://quay.io/repository/openshift/origin-cli?tab=tags
     }
@@ -311,7 +311,7 @@ pipeline {
                                 print(list[i])
                                 // stage details here
                                 sh """
-                                    docker run --rm -v "$WORKSPACE":/usr/src/mymaven -w /usr/src/mymaven $JAVA_MVN_IMAGE_VERSION mvn test --batch-mode
+                                    docker run --rm -v "$WORKSPACE":/opt/repo -w /opt/repo $JAVA_MVN_IMAGE_VERSION ./mvnw test --batch-mode
                                 """
                             }
                         } else if ("${list[i]}" == "'SonarQubeScan'" && env.ACTION == 'DEPLOY' && stage_flag['sonarScan']) {
@@ -323,12 +323,12 @@ pipeline {
 
                                 if (env.SONAR_CREDENTIAL_ID != null && env.SONAR_CREDENTIAL_ID != '') {
                                     withCredentials([usernamePassword(credentialsId: "$SONAR_CREDENTIAL_ID", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                                        sh """docker run -v "$WORKSPACE":/app -w /app sonarsource/sonar-scanner-cli:4.7.0 -Dsonar.java.binaries='.' -Dsonar.exclusions='pom.xml, target/**/*' -Dsonar.projectKey="${sonar_project_key}" -Dsonar.projectName="${sonar_project_key}" -Dsonar.host.url="${metadataVars.sonarHost}" -Dsonar.organization="${metadataVars.sonarOrg}" -Dsonar.login=$PASSWORD"""
+                                        sh """docker run -v "$WORKSPACE":/app -w /app sonarsource/sonar-scanner-cli:11.0 -Dsonar.java.binaries='.' -Dsonar.exclusions='pom.xml, target/**/*' -Dsonar.projectKey="${sonar_project_key}" -Dsonar.projectName="${sonar_project_key}" -Dsonar.sources=src -Dsonar.host.url="${metadataVars.sonarHost}" -Dsonar.organization="${metadataVars.sonarOrg}" -Dsonar.login=$PASSWORD"""
                                     }
                                 }
                                 else{
                                     withSonarQubeEnv('pg-sonar') {
-                                        sh """docker run -v "$WORKSPACE":/app -w /app sonarsource/sonar-scanner-cli:4.7.0 -Dsonar.java.binaries='.' -Dsonar.exclusions='pom.xml, target/**/*' -Dsonar.projectKey="${sonar_project_key}" -Dsonar.projectName="${sonar_project_key}" -Dsonar.organization="${metadataVars.sonarOrg}" -Dsonar.host.url="$SONAR_HOST_URL" -Dsonar.login=$SONAR_AUTH_TOKEN """
+                                        sh """docker run -v "$WORKSPACE":/app -w /app sonarsource/sonar-scanner-cli:11.0 -Dsonar.java.binaries='.' -Dsonar.exclusions='pom.xml, target/**/*' -Dsonar.projectKey="${sonar_project_key}" -Dsonar.projectName="${sonar_project_key}" -Dsonar.sources=src -Dsonar.organization="${metadataVars.sonarOrg}" -Dsonar.host.url="$SONAR_HOST_URL" -Dsonar.login=$SONAR_AUTH_TOKEN """
                                     }
                                 }
                             }
@@ -365,7 +365,7 @@ pipeline {
                                 // stage details here
                                 echo "echoed BUILD_TAG--- $BUILD_TAG"
                                 sh """
-                                    docker run --rm -v "$WORKSPACE":/usr/src/mymaven -w /usr/src/mymaven $JAVA_MVN_IMAGE_VERSION mvn clean install -Dmaven.test.skip=true
+                                    docker run --rm -v "$WORKSPACE":/opt/repo -w /opt/repo $JAVA_MVN_IMAGE_VERSION ./mvnw clean install -Dmaven.test.skip=true
                                     sudo chown -R `id -u`:`id -g` "$WORKSPACE" 
                                 """
                             }
