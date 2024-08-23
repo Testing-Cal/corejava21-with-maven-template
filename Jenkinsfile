@@ -326,12 +326,12 @@ pipeline {
 
                                 if (env.SONAR_CREDENTIAL_ID != null && env.SONAR_CREDENTIAL_ID != '') {
                                     withCredentials([usernamePassword(credentialsId: "$SONAR_CREDENTIAL_ID", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                                        sh """docker run -v "$WORKSPACE":/app -w /app sonarsource/sonar-scanner-cli:11.0 -Dsonar.java.binaries='.' -Dsonar.exclusions='pom.xml, target/**/*' -Dsonar.projectKey="${sonar_project_key}" -Dsonar.projectName="${sonar_project_key}" -Dsonar.sources=src -Dsonar.host.url="${metadataVars.sonarHost}" -Dsonar.organization="${metadataVars.sonarOrg}" -Dsonar.login=$PASSWORD"""
+                                        sh '''docker run -v "$WORKSPACE":/app -w /app sonarsource/sonar-scanner-cli:11.0 -Dsonar.java.binaries='.' -Dsonar.exclusions='pom.xml, target/**/*' -Dsonar.projectKey="$sonar_project_key" -Dsonar.projectName="$sonar_project_key" -Dsonar.sources=src -Dsonar.host.url="$sonar_host" -Dsonar.organization="$sonar_org" -Dsonar.login=$PASSWORD'''
                                     }
                                 }
                                 else{
                                     withSonarQubeEnv('pg-sonar') {
-                                        sh """docker run -v "$WORKSPACE":/app -w /app sonarsource/sonar-scanner-cli:11.0 -Dsonar.java.binaries='.' -Dsonar.exclusions='pom.xml, target/**/*' -Dsonar.projectKey="${sonar_project_key}" -Dsonar.projectName="${sonar_project_key}" -Dsonar.sources=src -Dsonar.organization="${metadataVars.sonarOrg}" -Dsonar.host.url="$SONAR_HOST_URL" -Dsonar.login=$SONAR_AUTH_TOKEN """
+                                        sh '''docker run -v "$WORKSPACE":/app -w /app sonarsource/sonar-scanner-cli:11.0 -Dsonar.java.binaries='.' -Dsonar.exclusions='pom.xml, target/**/*' -Dsonar.projectKey="$sonar_project_key" -Dsonar.projectName="$sonar_project_key" -Dsonar.sources=src -Dsonar.organization="$sonar_org" -Dsonar.host.url="$SONAR_HOST_URL" -Dsonar.login=$SONAR_AUTH_TOKEN '''
                                     }
                                 }
                             }
