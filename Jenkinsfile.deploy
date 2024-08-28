@@ -495,15 +495,14 @@ pipeline {
                                                '''
                                            }
                                            if (helmVars.helmRepoUrl != null && helmVars.helmRepoUrl != '') {
-                                                                                             env.temp_workingDirectory = "${helmVars.workingDirectory}"
-                                               env.helmvalues = "${helmVars.values}"
-                                               dir('externalChart') {
+                                              env.temp_workingDirectory = "${helmVars.workingDirectory}"
+                                              env.helmvalues = "${helmVars.values}"
+                                              dir('externalChart') {
                                                   checkout([$class: 'GitSCM', branches: [[name: "${helmVars.helmRepoBranch}"]], userRemoteConfigs: [[url: "${helmVars.helmRepoUrl}", credentialsId: scm.userRemoteConfigs[0].credentialsId]]])
                                                   sh '''
                                                   ### Command for running External helm Chart
                                                    docker run --rm  --user root -v "$KUBECONFIG":"$KUBECONFIG" -e KUBECONFIG="$KUBECONFIG" -v "$WORKSPACE":/apps -w /apps/externalChart $HELM_IMAGE_VERSION upgrade --install "$helmReleaseName" -n "$namespace_name" "$temp_workingDirectory" --atomic --timeout 300s --set image.repository="$REGISTRY_URL" --set image.tag="$BUILD_TAG" --set image.registrySecret="$kube_secret_name_for_registry"  --set service.internalport="$SERVICE_PORT" --set context="$CONTEXT" -f "$helmvalues" -f ../vault.yaml
-                                                   '''
-
+                                                  '''
 
                                               }
 
@@ -544,6 +543,7 @@ pipeline {
                                 }
                                 if (env.DEPLOYMENT_TYPE == 'KUBERNETES' || env.DEPLOYMENT_TYPE == 'OPENSHIFT') {
                                     withCredentials([file(credentialsId: "$KUBE_SECRET", variable: 'KUBECONFIG')]) {
+                                      env.helmReleaseName = "${metadataVars.helmReleaseName}"
                                       sh '''
                                       docker run --rm  --user root -v "$KUBECONFIG":"$KUBECONFIG" -e KUBECONFIG="$KUBECONFIG" -v "$WORKSPACE":/apps -w /apps $HELM_IMAGE_VERSION uninstall "$helmReleaseName" -n "$namespace_name"
                                       '''
