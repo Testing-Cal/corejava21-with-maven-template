@@ -30,6 +30,14 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 {{- end }}
+{{- if eq .Values.ingress.controllerType  "application-gateway" }}
+  {{- with .Values.ingress.agicAnnotations }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.ingress.agicExtraAnnotations  }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}
 spec:
   ingressClassName: {{ .Values.ingress.ingressClass }}
   {{- if .Values.ingress.tls }}
