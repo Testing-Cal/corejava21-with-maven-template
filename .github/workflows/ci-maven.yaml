@@ -53,7 +53,7 @@ jobs:
 
       - name: SonarQube Scan
         run: |
-          docker run -v "$GITHUB_WORKSPACE":/app -w /app "$SONAR_IMAGE_VERSION" -Dsonar.java.binaries='.' -Dsonar.exclusions='pom.xml, target/**/*' -Dsonar.projectKey="$SONAR_PEOJECT_KEY" -Dsonar.projectName="$SONAR_PEOJECT_KEY" -Dsonar.sources=src -Dsonar.host.url="$SONAR_HOST" -Dsonar.organization="$SONAR_ORG" -Dsonar.login=${{ secrets[env.SONAR_CREDENTIAL_ID] }} -Dsonar.token=${{ secrets[env.SONAR_CREDENTIAL_ID] }}
+          docker run -v "$GITHUB_WORKSPACE":/app -w /app "$SONAR_IMAGE_VERSION" -Dsonar.java.binaries='.' -Dsonar.exclusions='pom.xml, target/**/*' -Dsonar.projectKey="$SONAR_PROJECT_KEY" -Dsonar.projectName="$SONAR_PROJECT_KEY" -Dsonar.sources=src -Dsonar.host.url="$SONAR_HOST" -Dsonar.organization="$SONAR_ORG" -Dsonar.login=${{ secrets[env.SONAR_CREDENTIAL_ID] }} -Dsonar.token=${{ secrets[env.SONAR_CREDENTIAL_ID] }}
 
       - name: Build Container Image
         run: |
